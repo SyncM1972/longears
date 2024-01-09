@@ -33,6 +33,7 @@ typedef struct connection {
   int next_chan;
   struct consumer *consumers;
   struct bg_conn *bg_conn;
+  int heartbeat;
 } connection;
 
 typedef struct consumer {
@@ -58,6 +59,7 @@ void destroy_bg_conn(bg_conn *conn);
 int lconnect(connection *conn, char *buffer, size_t len);
 int ensure_valid_channel(connection *, channel *, char *, size_t);
 
+extern int amqp_tune_connection(amqp_connection_state_t state, int channel_max, int frame_max, int heartbeat);
 #ifdef __cplusplus
 }
 #endif

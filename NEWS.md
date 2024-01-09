@@ -45,6 +45,10 @@
 - Fix potential memory corruption when passing raw vectors as properties or
   headers.
 
+- heartbeat parameter added to amqp_connect.
+
+- Bugfix in consume.c
+ 
 # longears 0.2.4 (2020-08-27)
 
 - Fixes handling of connection failures in `amqp_listen()`. Previously if you

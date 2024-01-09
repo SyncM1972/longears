@@ -16,6 +16,7 @@
 #' @param password User credentials.
 #' @param timeout A timeout, in seconds, for operations that support it.
 #' @param name A name for the connection that may appear in supported interfaces.
+#' @param heartbeat A heartbeat, in seconds, for the connection. 0 deactivates heartbeats.
 #'
 #' @return An \code{amqp_connection} object.
 #'
@@ -30,9 +31,9 @@
 #' @export
 amqp_connect <- function(host = "localhost", port = 5672L, vhost = "/",
                          username = "guest", password = "guest",
-                         timeout = 10L, name = "longears") {
+                         timeout = 10L, name = "longears", heartbeat = 60L) {
   conn <- .Call(
-    R_amqp_connect, host, port, vhost, username, password, timeout, name,
+    R_amqp_connect, host, port, vhost, username, password, timeout, name, heartbeat,
     PACKAGE = "longears"
   )
   structure(list(ptr = conn, host = host, port = port, vhost = vhost),

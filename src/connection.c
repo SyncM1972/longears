@@ -32,7 +32,7 @@ static void R_finalize_amqp_connection(SEXP ptr)
 }
 
 SEXP R_amqp_connect(SEXP host, SEXP port, SEXP vhost, SEXP username,
-                    SEXP password, SEXP timeout, SEXP name)
+                    SEXP password, SEXP timeout, SEXP name, SEXP heartbeat)
 {
   const char *host_str = CHAR(asChar(host));
   int port_num = asInteger(port);
@@ -41,6 +41,7 @@ SEXP R_amqp_connect(SEXP host, SEXP port, SEXP vhost, SEXP username,
   const char *password_str = CHAR(asChar(password));
   int seconds = asInteger(timeout);
   const char *name_str = CHAR(asChar(name));
+  int heartbeat_interval = asInteger(heartbeat);
 
   connection *conn = malloc(sizeof(connection)); // NOTE: Assuming this works.
   conn->host = host_str;
@@ -57,7 +58,7 @@ SEXP R_amqp_connect(SEXP host, SEXP port, SEXP vhost, SEXP username,
   conn->bg_conn = NULL;
   conn->is_connected = 0;
   conn->conn = amqp_new_connection();
-
+  conn->heartbeat = heartbeat_interval;
   if (!conn->conn) {
     free(conn);
     Rf_error("Failed to create an amqp connection.");
@@ -249,7 +250,8 @@ int lconnect(connection *conn, char *buffer, size_t len)
 
   reply = amqp_login_with_properties(conn->conn, conn->vhost,
                                      AMQP_DEFAULT_MAX_CHANNELS,
-                                     AMQP_DEFAULT_FRAME_SIZE, 60, &props,
+                                     AMQP_DEFAULT_FRAME_SIZE,
+                                     conn->heartbeat, &props,
                                      AMQP_SASL_METHOD_PLAIN, conn->username,
                                      conn->password);
 

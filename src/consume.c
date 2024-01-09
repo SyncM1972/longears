@@ -73,9 +73,9 @@ SEXP R_amqp_create_consumer(SEXP ptr, SEXP queue, SEXP tag, SEXP fun, SEXP rho,
   amqp_basic_qos_ok_t *qos_ok = amqp_basic_qos(conn->conn, con->chan.chan, 0,
                                                prefetch_count, 0);
   if (qos_ok == NULL) {
-    free(con);
     amqp_rpc_reply_t reply = amqp_get_rpc_reply(conn->conn);
     render_amqp_error(reply, con->conn, &con->chan, errbuff, 200);
+    free(con);
     Rf_error("Failed to set quality of service. %s", errbuff);
   }
 
@@ -84,9 +84,9 @@ SEXP R_amqp_create_consumer(SEXP ptr, SEXP queue, SEXP tag, SEXP fun, SEXP rho,
                                   0, has_no_ack, is_exclusive, *arg_table);
 
   if (consume_ok == NULL) {
-    free(con);
     amqp_rpc_reply_t reply = amqp_get_rpc_reply(conn->conn);
     render_amqp_error(reply, con->conn, &con->chan, errbuff, 200);
+    free(con);
     Rf_error("Failed to start a queue consumer. %s", errbuff);
   }
 

@@ -10,7 +10,7 @@
 \usage{
 amqp_connect(host = "localhost", port = 5672L, vhost = "/",
   username = "guest", password = "guest", timeout = 10L,
-  name = "longears")
+  name = "longears", heartbeat = 60L)
 
 \method{print}{amqp_connection}(x, full = FALSE, ...)
 
@@ -32,6 +32,8 @@ amqp_disconnect(conn)
 \item{timeout}{A timeout, in seconds, for operations that support it.}
 
 \item{name}{A name for the connection that may appear in supported interfaces.}
+
+\item{heartbeat}{A heartbeat, in seconds, for the connection. 0 deactivates heartbeats.}
 
 \item{x}{An object returned by \code{\link{amqp_connect}}.}
 
