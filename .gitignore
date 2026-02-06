@@ -11,3 +11,4 @@ config.log
 src/librabbitmq
 src/librabbitmq.a
 docs
+.Rhistory
