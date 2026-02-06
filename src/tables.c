@@ -1,5 +1,6 @@
 #include <stdlib.h> /* for malloc, free */
 #include <string.h> /* for memcpy */
+#include <math.h>   /* for pow */
 
 #include "constants.h"
 #include "tables.h"
@@ -190,11 +191,32 @@ SEXP decode_field_value(amqp_field_value_t value)
     return decode_table(&value.value.table);
     break;
 
+  case AMQP_FIELD_KIND_TIMESTAMP: {
+    SEXP out = PROTECT(Rf_allocVector(REALSXP, 1));
+    REAL(out)[0] = (double) value.value.u64;
+
+    SEXP cls = PROTECT(Rf_allocVector(STRSXP, 2));
+    SET_STRING_ELT(cls, 0, Rf_mkChar("POSIXct"));
+    SET_STRING_ELT(cls, 1, Rf_mkChar("POSIXt"));
+    Rf_classgets(out, cls);
+
+    SEXP tz = PROTECT(Rf_mkString("UTC"));
+    Rf_setAttrib(out, Rf_install("tzone"), tz);
+
+    UNPROTECT(3);
+    return out;
+  }
+
+  case AMQP_FIELD_KIND_DECIMAL: {
+    double scale = 1.0;
+    uint8_t decimals = value.value.decimal.decimals;
+    for (uint8_t i = 0; i < decimals; i++) {
+      scale *= 10.0;
+    }
+    return ScalarReal((double) value.value.decimal.value / scale);
+  }
+
     /* No obvious equivalents. */
-  case AMQP_FIELD_KIND_TIMESTAMP:
-    Rf_warning("Ignoring unsupport field type 'timestamp' in the table.");
-  case AMQP_FIELD_KIND_DECIMAL:
-    Rf_warning("Ignoring unsupport field type 'decimal' in the table.");
     break;
   default:
     Rf_warning("Ignoring unexpected field type '%d' in the table.", value.kind);

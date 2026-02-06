@@ -1,4 +1,4 @@
-# longears 0.2.4.9000
+# longears 0.2.4.4
 
 - The package now builds and installs correctly on Windows with a stock
   [Rtools](https://cran.r-project.org/bin/windows/Rtools/) toolchain.
@@ -48,6 +48,9 @@
 - heartbeat parameter added to amqp_connect.
 
 - Bugfix in consume.c
+
+- Decode AMQP table fields for timestamp and decimal types instead of ignoring
+  them.
  
 # longears 0.2.4 (2020-08-27)
 
